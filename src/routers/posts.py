@@ -27,14 +27,14 @@ async def create_post(
 
     # generate file name
     file_name = f"{utils.generate_uuid()}_{file.filename}"
-    file_location = os.path.join("uploads/post_images", file_name)
+    file_location = os.path.join("uploads", "post_images", file_name)
 
     # saving file object
     with open(file_location, "wb") as buffer:
         buffer.write(await file.read())
 
     # simpan record di DB (simpan relative path biar gampang dipakai di frontend)
-    image_url = f"/static/post_images/{file_name}"
+    image_url = file_location
 
     new_post = Post(
         post_id=utils.generate_uuid(),

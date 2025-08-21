@@ -12,9 +12,9 @@ class Post(Base):
     post_id = Column(String, primary_key=True, default=generate_uuid)
     user_id = Column(String, ForeignKey("users.user_id"), nullable=False)
     image_url = Column(String, nullable=False)
-    create_at = Column(DateTime, default=datetime.utcnow)
+    create_at = Column(DateTime, default=datetime.now())
 
-    # 🔑 harus cocok
     user = relationship("User", back_populates="posts")
 
-    # results = relationship("Results", back_populates="post", cascade="all, delete")
+    # harus "Result" (singular), dan back_populates harus match dengan di Result
+    results = relationship("Result", back_populates="post", cascade="all, delete")
