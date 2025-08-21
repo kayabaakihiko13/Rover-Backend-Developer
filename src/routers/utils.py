@@ -5,11 +5,6 @@ from jose import jwt
 from passlib.context import CryptContext
 from src.settings.db import SessionLocal
 from src.settings.config import settings
-# JWT config
-SECRET_KEY = "SUPER_SECRET_KEY"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-
 
 
 # pasword hashing
@@ -17,8 +12,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # oauth scheme
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-
 
 def get_db():
     db = SessionLocal()
