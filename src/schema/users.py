@@ -26,3 +26,15 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str
 
+
+class ForgetPasswordRequest(BaseModel):
+    email:EmailStr
+    username:str
+
+class ResetPasswordRequest(BaseModel):
+    email:str
+    token:str
+    new_password:str
+    confirm_password:str
+
+
