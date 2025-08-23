@@ -107,7 +107,7 @@ async def forget_password(request: ForgetPasswordRequest, db: Session = Depends(
         raise HTTPException(status_code=404, detail="Email/Username not found or mismatch")
 
     # generate reset token
-    reset_token_expires = timedelta(minutes=30)
+    reset_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     reset_token = create_access_token(
         data={"sub": str(result.user_id), "reset": True},
         expires_delta=reset_token_expires
