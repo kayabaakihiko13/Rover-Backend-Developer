@@ -13,7 +13,6 @@ router = APIRouter(prefix='/posts', tags=['posts'])
 # pastikan folder benar (uploads, bukan uploades)
 os.makedirs("uploads/post_images", exist_ok=True)
 
-
 @router.post("/{user_id}", response_model=PostResponse)
 async def create_post(
     user_id: str,
