@@ -73,16 +73,29 @@ async def register_user(user:RegisterRequest,db:Session = Depends(get_db)):
 @router.post("/login", response_model=TokenResponse)
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), 
                 db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.username == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.password):
+    query = """
+        SELECT * FROM users
+        WHERE users.username = :username
+        LIMIT 1
+    """
+    result = db.execute(text(query),{'username':form_data.username}).fetchone()
+
+    if not result:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
-            headers={"WWW-Authenticate": "Bearer"},
+            headers={"WWW-Authenticate":"Bearer"}
+        )
+    # result disini tipe-tipennya RowMapping (bisa diakses kayak dict)
+    if not verify_password(form_data.password,result.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+            headers={"WWW-Authenticate":"bearer"}
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": str(user.user_id)}, expires_delta=access_token_expires
+        data={"sub": str(result.user_id)}, expires_delta=access_token_expires
     )
     # kalau sukses -> balikin data user (tanpa password)
     return {"access_token": access_token, "token_type": "bearer"}
@@ -98,10 +111,10 @@ def read_users_me(current_user: User = Depends(_get_current_user)):
 async def forget_password(request: ForgetPasswordRequest, db: Session = Depends(get_db)):
     query = text("""
         SELECT * FROM users
-        WHERE email = :email AND username = :username
+        WHERE username = :username
         LIMIT 1
     """)
-    result = db.execute(query, {"email": request.email, "username": request.username}).fetchone()
+    result = db.execute(query, {"username": request.username}).fetchone()
 
     if not result:
         raise HTTPException(status_code=404, detail="Email/Username not found or mismatch")
